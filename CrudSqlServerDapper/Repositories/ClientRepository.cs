@@ -36,5 +36,81 @@ namespace CrudSqlServerDapper.Repositories
                 connection.Execute(query, client);
             }
         }
+
+        /// <summary>
+        /// Update Method to update an existing Client object in the database.
+        /// </summary>
+        /// <param name="client"></param>
+        public void Update(Client client)
+        {
+            var query = @"
+                        UPDATE CLIENT  
+                        SET NAME = @Name,
+                            EMAIL = @Email,
+                            BIRTHDATE = @BirthDate
+                        WHERE 
+                            ID = @Id
+                        ";
+
+            using (var connection = new SqlConnection(_appSettings.ConnectionString))
+            {
+                connection.Execute(query, client);
+            }
+        }
+
+        /// <summary>
+        /// Delete Method to remove a Client object from the database by its ID.
+        /// </summary>
+        /// <param name="id"></param>
+        public void Delete(Guid id)
+        {
+            var query = @"
+                        DELETE FROM CLIENT
+                        WHERE ID = @Id
+                        ";
+
+            using (var connection = new SqlConnection(_appSettings.ConnectionString))
+            {
+                connection.Execute(query, new { Id = id });
+            }
+        }
+
+        /// <summary>
+        /// Method to retrieve a Client object by its ID from the database.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public Client? GetById(Guid id)
+        {
+            var query = @"
+                        SELECT * FROM CLIENT
+                        WHERE ID = @Id
+                        ";
+
+            using (var connection = new SqlConnection(_appSettings.ConnectionString))
+            {
+                return connection.QueryFirstOrDefault<Client>(query, new { Id = id });
+            }
+        }
+
+
+
+        /// <summary>
+        /// Method to return all Client objects from the database.
+        /// </summary>
+        /// <returns></returns>
+        public List<Client> GetAll()
+        {
+            var query = @"
+                        SELECT ID, NAME, EMAIL, BIRTHDATE
+                        FROM CLIENT
+                        ORDER BY NAME";
+
+            using (var connection = new SqlConnection(_appSettings.ConnectionString))
+            {
+                //Client represents the entity type
+                return connection.Query<Client>(query).ToList();
+            }
+        }
     }
 }
